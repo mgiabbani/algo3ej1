@@ -1,8 +1,1 @@
-# Ignore everything
-*
-
-# But not these files...
-!.gitignore
-!README.md
-!respuestas.md
-!AtaquesFantasticosPaso2.st
+.DS_Store
