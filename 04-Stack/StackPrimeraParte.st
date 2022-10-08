@@ -1,9 +1,9 @@
-!classDefinition: #StackTest category: 'Stack-ejercicio04'!
+!classDefinition: #StackTest category: 'StackPrimeraParte'!
 TestCase subclass: #StackTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'Stack-ejercicio04'!
+	category: 'StackPrimeraParte'!
 
 !StackTest methodsFor: 'as yet unclassified' stamp: 'sp 10/6/2022 18:18:46'!
 test01newStackIsEmpty
@@ -78,12 +78,12 @@ test05insertingAndRemovingMultipleItemsIsOk
 		withExceptionDo: [ :anError | self assert: anError messageText = 'Cant pop from an empty stack.'.].! !
 
 
-!classDefinition: #Stack category: 'Stack-ejercicio04'!
+!classDefinition: #Stack category: 'StackPrimeraParte'!
 Object subclass: #Stack
 	instanceVariableNames: 'orderedCollection'
 	classVariableNames: ''
 	poolDictionaries: ''
-	category: 'Stack-ejercicio04'!
+	category: 'StackPrimeraParte'!
 
 !Stack methodsFor: 'initialization' stamp: 'sp 10/6/2022 17:16:49'!
 initialize
