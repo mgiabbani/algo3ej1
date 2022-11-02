@@ -85,6 +85,23 @@ test05multiplesAccionesJuntas
 	self assert: marsRover posicionActual = posicionFinalEsperada .
 	self assert: (marsRover direccionActual isKindOf: Oeste) .! !
 
+!MarsRoverTest methodsFor: 'tests' stamp: 'sp 11/2/2022 20:46:13'!
+test06caracterInvalidoCortaLaSecuencia
+	| marsRover posicionInicial puntoCardinalInicial secuenciaDeMovimientos posicionFinalEsperada |
+	
+	posicionInicial := Point x: 0 y: 0.
+	puntoCardinalInicial := Norte new.
+	
+	marsRover := MarsRover new conPosicionInicial: posicionInicial yPuntoCardinal: puntoCardinalInicial .
+	
+	secuenciaDeMovimientos := #('f' 'f' 'x' 'f').
+	posicionFinalEsperada := Point x: 0 y: 2.
+	
+	marsRover ejecutarSecuenciaDeMovimientos: secuenciaDeMovimientos .
+	
+	self assert: marsRover posicionActual = posicionFinalEsperada .
+	self assert: (marsRover direccionActual isKindOf: Norte) .! !
+
 
 !classDefinition: #Accion category: 'MarsRover'!
 Object subclass: #Accion
@@ -337,10 +354,11 @@ conPosicionInicial: posicionInicial yPuntoCardinal: puntoCardinalInicial .
 avanzar
 	posicion := posicion + direccion avanzar .! !
 
-!MarsRover methodsFor: 'movimiento' stamp: 'sp 11/2/2022 20:39:07'!
+!MarsRover methodsFor: 'movimiento' stamp: 'sp 11/2/2022 20:48:17'!
 ejecutarSecuenciaDeMovimientos: secuenciaDeMovimientos
 	secuenciaDeMovimientos do: [:movimiento | | accion |
 		accion := Accion aPartirDelCaracter: movimiento.
+		(accion isKindOf: AccionInvalida ) ifTrue: [^self].
 		accion aplicarSobre: self.
 	].! !
 
