@@ -1,11 +1,33 @@
 !classDefinition: #MarsRoverTest category: 'MarsRover'!
 TestCase subclass: #MarsRoverTest
-	instanceVariableNames: ''
+	instanceVariableNames: 'marsRoverDePrueba'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'sp 11/2/2022 20:39:57'!
+!MarsRoverTest methodsFor: 'setUp' stamp: 'mg 11/4/2022 13:45:30'!
+conPosicionInicialX: x0 posicionInicialY: y0 yPuntoCardinalInicial: unPuntoCardinalInicial  ejecutaLaSecuenciaDeMovimientos: unArregloDeInstrucciones 
+	|posicionInicial puntoCardinalInicial|
+	
+	posicionInicial  := Point x: x0 y: y0.
+	puntoCardinalInicial := unPuntoCardinalInicial new.
+
+	marsRoverDePrueba := MarsRover new conPosicionInicial: posicionInicial yPuntoCardinal: puntoCardinalInicial .
+	
+	marsRoverDePrueba ejecutarSecuenciaDeMovimientos: unArregloDeInstrucciones .! !
+
+
+!MarsRoverTest methodsFor: 'assertions' stamp: 'mg 11/4/2022 13:40:34'!
+afirmaQueLaDireccionActualEs: puntoCardinalActual laPosicionActualX: x1 ylaPosicionActualY: y1
+	|posicionFinalEsperada|
+	
+	posicionFinalEsperada  := Point x: x1 y: y1.
+	
+	self assert: marsRoverDePrueba posicionActual = posicionFinalEsperada .
+	self assert: (marsRoverDePrueba direccionActual isKindOf: puntoCardinalActual ).! !
+
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'mg 11/4/2022 13:38:52'!
 test01nuevoMarsRoverEmpiezaConLaPosicionDeseada
 	| marsRover posicionInicial puntoCardinalInicial |
 	
@@ -15,92 +37,46 @@ test01nuevoMarsRoverEmpiezaConLaPosicionDeseada
 	marsRover := MarsRover new conPosicionInicial: posicionInicial yPuntoCardinal: puntoCardinalInicial .
 	
 	self assert: marsRover posicionActual = posicionInicial .
-	self assert: marsRover direccionActual = puntoCardinalInicial .! !
+	self assert: marsRover direccionActual = puntoCardinalInicial .
+	
+	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'sp 11/2/2022 20:39:57'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'mg 11/4/2022 13:55:08'!
 test02secuenciaSimpleSeEjecutaCorrectamente
-	| marsRover posicionInicial puntoCardinalInicial secuenciaDeMovimientos posicionFinalEsperada |
-	
-	posicionInicial := Point x: 0 y: 0.
-	puntoCardinalInicial := Norte new.
-	
-	marsRover := MarsRover new conPosicionInicial: posicionInicial yPuntoCardinal: puntoCardinalInicial .
-	
-	secuenciaDeMovimientos := #('f').
-	posicionFinalEsperada := Point x: 0 y: 1.
-	
-	marsRover ejecutarSecuenciaDeMovimientos: secuenciaDeMovimientos .
-	
-	self assert: marsRover posicionActual = posicionFinalEsperada .
-	self assert: marsRover direccionActual = puntoCardinalInicial .! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'sp 11/2/2022 20:39:57'!
+	self conPosicionInicialX: 0 posicionInicialY: 0 yPuntoCardinalInicial: Norte  ejecutaLaSecuenciaDeMovimientos: #('f'). 
+	
+	self afirmaQueLaDireccionActualEs: Norte laPosicionActualX: 0 ylaPosicionActualY: 1
+	
+! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'mg 11/4/2022 13:34:57'!
 test03avanzarYRetrocederVuelveALaMismaPosicion
-	| marsRover posicionInicial puntoCardinalInicial secuenciaDeMovimientos posicionFinalEsperada |
-	
-	posicionInicial := Point x: 12 y: 11.
-	puntoCardinalInicial := Sur new.
-	
-	marsRover := MarsRover new conPosicionInicial: posicionInicial yPuntoCardinal: puntoCardinalInicial .
-	
-	secuenciaDeMovimientos := #('f' 'b').
-	posicionFinalEsperada := Point x: 12 y: 11.
-	
-	marsRover ejecutarSecuenciaDeMovimientos: secuenciaDeMovimientos .
-	
-	self assert: marsRover posicionActual = posicionFinalEsperada .
-	self assert: marsRover direccionActual = puntoCardinalInicial .	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'sp 11/2/2022 20:39:57'!
+	self conPosicionInicialX: 12 posicionInicialY: 11 yPuntoCardinalInicial: Sur  ejecutaLaSecuenciaDeMovimientos: #('f' 'b'). 
+
+	self afirmaQueLaDireccionActualEs: Sur laPosicionActualX: 12 ylaPosicionActualY: 11.! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'mg 11/4/2022 13:46:46'!
 test04cambiarRumboYAvanzarLlevaAPosicionEsperada
-	| marsRover posicionInicial puntoCardinalInicial secuenciaDeMovimientos posicionFinalEsperada |
-	
-	posicionInicial := Point x: 0 y: 0.
-	puntoCardinalInicial := Norte new.
-	
-	marsRover := MarsRover new conPosicionInicial: posicionInicial yPuntoCardinal: puntoCardinalInicial .
-	
-	secuenciaDeMovimientos := #('f' 'r' 'f').
-	posicionFinalEsperada := Point x: 1 y: 1.
-	
-	marsRover ejecutarSecuenciaDeMovimientos: secuenciaDeMovimientos .
-	
-	self assert: marsRover posicionActual = posicionFinalEsperada .
-	self assert: (marsRover direccionActual isKindOf: Este) .! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'sp 11/2/2022 20:39:57'!
+	self conPosicionInicialX: 0 posicionInicialY: 0 yPuntoCardinalInicial: Norte ejecutaLaSecuenciaDeMovimientos: #('f' 'r' 'f'). 
+
+	self afirmaQueLaDireccionActualEs: Este laPosicionActualX: 1 ylaPosicionActualY: 1.! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'mg 11/4/2022 13:46:24'!
 test05multiplesAccionesJuntas
-	| marsRover posicionInicial puntoCardinalInicial secuenciaDeMovimientos posicionFinalEsperada |
 	
-	posicionInicial := Point x: 0 y: 0.
-	puntoCardinalInicial := Norte new.
-	
-	marsRover := MarsRover new conPosicionInicial: posicionInicial yPuntoCardinal: puntoCardinalInicial .
-	
-	secuenciaDeMovimientos := #('f' 'r' 'f' 'f' 'f' 'b' 'r' 'l' 'r' 'f' 'b' 'l' 'f' 'r' 'f' 'f' 'f' 'b' 'r' 'l' 'r' 'f' 'b' 'l' 'f' 'r' 'f' 'f' 'f' 'b' 'r' 'l' 'r' 'f' 'b' 'l').
-	posicionFinalEsperada := Point x: 1 y: -2.
-	
-	marsRover ejecutarSecuenciaDeMovimientos: secuenciaDeMovimientos .
-	
-	self assert: marsRover posicionActual = posicionFinalEsperada .
-	self assert: (marsRover direccionActual isKindOf: Oeste) .! !
+	self conPosicionInicialX: 0 posicionInicialY: 0 yPuntoCardinalInicial: Norte ejecutaLaSecuenciaDeMovimientos: #('f' 'r' 'f' 'f' 'f' 'b' 'r' 'l' 'r' 'f' 'b' 'l' 'f' 'r' 'f' 'f' 'f' 'b' 'r' 'l' 'r' 'f' 'b' 'l' 'f' 'r' 'f' 'f' 'f' 'b' 'r' 'l' 'r' 'f' 'b' 'l') .
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'sp 11/2/2022 20:46:13'!
+	self afirmaQueLaDireccionActualEs: Oeste laPosicionActualX: 1 ylaPosicionActualY: -2.! !
+
+!MarsRoverTest methodsFor: 'tests' stamp: 'mg 11/4/2022 13:46:37'!
 test06caracterInvalidoCortaLaSecuencia
-	| marsRover posicionInicial puntoCardinalInicial secuenciaDeMovimientos posicionFinalEsperada |
 	
-	posicionInicial := Point x: 0 y: 0.
-	puntoCardinalInicial := Norte new.
+	self conPosicionInicialX: 0 posicionInicialY: 0 yPuntoCardinalInicial: Norte ejecutaLaSecuenciaDeMovimientos: #('f' 'f' 'x' 'f'). 
 	
-	marsRover := MarsRover new conPosicionInicial: posicionInicial yPuntoCardinal: puntoCardinalInicial .
-	
-	secuenciaDeMovimientos := #('f' 'f' 'x' 'f').
-	posicionFinalEsperada := Point x: 0 y: 2.
-	
-	marsRover ejecutarSecuenciaDeMovimientos: secuenciaDeMovimientos .
-	
-	self assert: marsRover posicionActual = posicionFinalEsperada .
-	self assert: (marsRover direccionActual isKindOf: Norte) .! !
+	self afirmaQueLaDireccionActualEs: Norte laPosicionActualX: 0 ylaPosicionActualY: 2.! !
 
 
 !classDefinition: #Accion category: 'MarsRover'!
