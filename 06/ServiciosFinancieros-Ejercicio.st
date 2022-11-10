@@ -1,3 +1,28 @@
+!classDefinition: #PortfolioTest category: 'ServiciosFinancieros-Ejercicio'!
+TestCase subclass: #PortfolioTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'sp 11/10/2022 19:19:42'!
+test01
+	| portfolio |
+	portfolio := Portfolio new.
+	
+	self assert: portfolio balance equals: 0*peso .! !
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'sp 11/10/2022 19:32:18'!
+test02
+	| portfolio account |
+	portfolio := Portfolio new.
+	account := ReceptiveAccount new.
+	
+	portfolio addMember: account.
+	
+	self assert: (portfolio hasMember: account).! !
+
+
 !classDefinition: #ReceptiveAccountTest category: 'ServiciosFinancieros-Ejercicio'!
 TestCase subclass: #ReceptiveAccountTest
 	instanceVariableNames: ''
@@ -96,11 +121,11 @@ TestCase subclass: #TransferTest
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!TransferTest methodsFor: 'as yet unclassified' stamp: 'mg 11/9/2022 19:56:50'!
+!TransferTest methodsFor: 'test' stamp: 'sp 11/10/2022 19:17:51'!
 test01
 	| account1 account2 |
-	account1 _ ReceptiveAccount new.
-	account2 _ ReceptiveAccount new.
+	account1 := ReceptiveAccount new.
+	account2 := ReceptiveAccount new.
 	Transfer
 		amount: 0 * peso
 		from: account1
@@ -112,7 +137,7 @@ test01
 		assert: account2 balance
 		equals: 0 * peso.! !
 
-!TransferTest methodsFor: 'as yet unclassified' stamp: 'mg 11/9/2022 19:56:57'!
+!TransferTest methodsFor: 'test' stamp: 'mg 11/9/2022 19:56:57'!
 test02
 	| account1 account2 |
 	account1 _ ReceptiveAccount new.
@@ -128,7 +153,7 @@ test02
 		assert: account2 balance
 		equals: 1 * peso.! !
 
-!TransferTest methodsFor: 'as yet unclassified' stamp: 'mg 11/9/2022 19:57:05'!
+!TransferTest methodsFor: 'test' stamp: 'mg 11/9/2022 19:57:05'!
 test03
 	| account1 account2 |
 	account1 _ ReceptiveAccount new.
@@ -147,7 +172,7 @@ test03
 		assert: account2 balance
 		equals: 25 * peso.! !
 
-!TransferTest methodsFor: 'as yet unclassified' stamp: 'mg 11/9/2022 19:57:44'!
+!TransferTest methodsFor: 'test' stamp: 'mg 11/9/2022 19:57:44'!
 test04
 	| account1 account2 transfer |
 	account1 _ ReceptiveAccount new.
@@ -163,18 +188,17 @@ test04
 		assert: transfer value
 		equals: 25 * peso.! !
 
-!TransferTest methodsFor: 'as yet unclassified' stamp: 'mg 11/9/2022 20:19:01'!
+!TransferTest methodsFor: 'test' stamp: 'sp 11/9/2022 20:44:51'!
 test05
 	| account1 account2 |
 	account1 _ ReceptiveAccount new.
-	Deposit
-		register: 100 * peso
-		on: account1.
 	account2 _ ReceptiveAccount new.
 	Transfer
 		amount: 25 * peso
 		from: account1
 		to: account2.
+	account1 balance .
+	account2 .
 	self assert: (((account1 transactions at: 1) getCounterpart) isKindOf: Deposit).
 	self assert: (((account2 transactions at: 1) getCounterpart) isKindOf: Withdraw)	.	! !
 
@@ -293,6 +317,56 @@ Withdraw class
 for: aValue
 
 	^ self new initializeFor: aValue ! !
+
+
+!classDefinition: #Portfolio category: 'ServiciosFinancieros-Ejercicio'!
+Object subclass: #Portfolio
+	instanceVariableNames: 'members'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'sp 11/10/2022 19:42:46'!
+addMember: aMember
+	(self hasMember: aMember ) ifTrue: [
+		^Error .	
+		].
+	members add: aMember.
+	! !
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'sp 11/10/2022 19:25:25'!
+balance
+	| balance |
+	balance := 0*peso .
+	members do: [ :member |
+		balance := balance + member balance.
+	].
+	^balance.
+		! !
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'sp 11/10/2022 19:41:08'!
+hasMember: aMember
+	^(members select: [ :member |
+		(member isKindOf: ReceptiveAccount) ifTrue:[
+			^member ==  aMember ].
+		(member isKindOf: Portfolio ) ifTrue: [
+				^member hasMember: aMember .
+			].
+		]) size ~= 0.! !
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'sp 11/10/2022 19:43:44'!
+initialize
+	members := OrderedCollection new.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Portfolio class' category: 'ServiciosFinancieros-Ejercicio'!
+Portfolio class
+	instanceVariableNames: ''!
+
+!Portfolio class methodsFor: 'as yet unclassified' stamp: 'sp 11/10/2022 19:29:25'!
+newEmpty
+	Portfolio new initialize.! !
 
 
 !classDefinition: #ReceptiveAccount category: 'ServiciosFinancieros-Ejercicio'!
