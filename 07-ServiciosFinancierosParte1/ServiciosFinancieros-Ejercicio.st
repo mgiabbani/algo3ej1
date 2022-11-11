@@ -1,110 +1,107 @@
 !classDefinition: #PortfolioTest category: 'ServiciosFinancieros-Ejercicio'!
 TestCase subclass: #PortfolioTest
-	instanceVariableNames: ''
+	instanceVariableNames: 'portfolioT accountT accountWith100Peso'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
+!PortfolioTest commentStamp: 'mg 11/11/2022 14:29:56' prior: 0!
+setUp
+	portfolioT := Portfolio new.
+	accountT := ReceptiveAccount new.
+!
 
-!PortfolioTest methodsFor: 'test' stamp: 'sp 11/10/2022 23:47:15'!
+
+!PortfolioTest methodsFor: 'test' stamp: 'mg 11/11/2022 15:46:32'!
 test01newPortfolioHasZeroPesosBalance
 	| portfolio |
+	
 	portfolio := Portfolio new.
 	
 	self assert: portfolio balance equals: 0*peso .! !
 
-!PortfolioTest methodsFor: 'test' stamp: 'sp 11/10/2022 23:47:58'!
+!PortfolioTest methodsFor: 'test' stamp: 'mg 11/11/2022 14:33:53'!
 test02addAccountAsMember
-	| portfolio account |
-	portfolio := Portfolio new.
-	account := ReceptiveAccount new.
-	
-	portfolio addMember: account.
-	
-	self assert: (portfolio hasMember: account).! !
 
-!PortfolioTest methodsFor: 'test' stamp: 'sp 11/10/2022 23:48:16'!
+	portfolioT addMember: accountT.
+	
+	self assert: (portfolioT hasMember: accountT).! !
+
+!PortfolioTest methodsFor: 'test' stamp: 'mg 11/11/2022 14:48:05'!
 test03portfolioBalanceReturnsAccountBalance
-	| portfolio account |
-	portfolio := Portfolio new.
-	account := ReceptiveAccount new.
-	Deposit register: 100 * peso on: account.
-	portfolio addMember: account.
-	
-	self assert: (portfolio hasMember: account).
-	self assert: portfolio balance equals: 100 * peso.! !
 
-!PortfolioTest methodsFor: 'test' stamp: 'sp 11/10/2022 23:48:35'!
+	portfolioT addMember: accountWith100Peso.
+	
+	self assert: (portfolioT hasMember: accountWith100Peso).
+	self assert: portfolioT balance equals: 100 * peso.! !
+
+!PortfolioTest methodsFor: 'test' stamp: 'mg 11/11/2022 15:46:23'!
 test04portfolioBalanceReturnsSumOfBalances
-	| portfolio account1 account2 |
-	portfolio := Portfolio new.
-	account1 := ReceptiveAccount new.
-	account2 := ReceptiveAccount new.
-	
-	Deposit register: 100 * peso on: account1.
-	Deposit register: 1000 * peso on: account2.
-	
-	portfolio addMember: account1.
-	portfolio addMember: account2.
 
-	self assert: portfolio balance equals: 1100 * peso.! !
+	Deposit register: 1000 * peso on: accountT.
+	
+	portfolioT addMember: accountWith100Peso.
+	portfolioT addMember: accountT.
 
-!PortfolioTest methodsFor: 'test' stamp: 'sp 11/10/2022 23:49:32'!
+	self assert: portfolioT balance equals: 1100 * peso.! !
+
+!PortfolioTest methodsFor: 'test' stamp: 'mg 11/11/2022 14:42:58'!
 test05doesNotHaveARegisteredDeposit
-	| portfolio account deposit |
-	portfolio := Portfolio new.
-	account := ReceptiveAccount new.
-	
-	deposit := Deposit register: 100 * peso on: account.
+	| deposit |
 
-	self assert: (portfolio hasRegistered: deposit) not.! !
+	deposit := Deposit register: 100 * peso on: accountT.
 
-!PortfolioTest methodsFor: 'test' stamp: 'sp 11/10/2022 23:49:46'!
+	self assert: (portfolioT hasRegistered: deposit) not.! !
+
+!PortfolioTest methodsFor: 'test' stamp: 'mg 11/11/2022 15:44:37'!
 test06hasARegisteredDeposit
-	| portfolio account deposit |
-	portfolio := Portfolio new.
-	account := ReceptiveAccount new.
-	
-	deposit := Deposit register: 100 * peso on: account.
-	portfolio addMember: account .
-	self assert: (portfolio hasRegistered: deposit).! !
+	| deposit |
 
-!PortfolioTest methodsFor: 'test' stamp: 'sp 11/10/2022 23:50:05'!
-test07getAccountTransactionsHasCorrectTransactions
-	| portfolio account deposit withdraw expectedReturn |
-	portfolio := Portfolio new.
-	account := ReceptiveAccount new.
+	deposit := Deposit register: 100 * peso on: accountT.
+	portfolioT addMember: accountT .
 	
-	deposit := Deposit register: 100 * peso on: account.
-	withdraw := Withdraw register: 12 * peso on: account.
-	portfolio addMember: account .
+	self assert: (portfolioT hasRegistered: deposit).! !
+
+!PortfolioTest methodsFor: 'test' stamp: 'mg 11/11/2022 15:44:18'!
+test07getAccountTransactionsHasCorrectTransactions
+	|  deposit withdraw expectedReturn |
+	
+	deposit := Deposit register: 100 * peso on: accountT.
+	withdraw := Withdraw register: 12 * peso on: accountT.
+	portfolioT addMember: accountT .
+	
 	expectedReturn := OrderedCollection new.
 	expectedReturn add: deposit .
 	expectedReturn add: withdraw .
-	self assert: (portfolio getAccountTransactions: account) equals: expectedReturn.! !
+	
+	self assert: (portfolioT getAccountTransactions: accountT) equals: expectedReturn.! !
 
-!PortfolioTest methodsFor: 'test' stamp: 'sp 11/10/2022 23:50:20'!
+!PortfolioTest methodsFor: 'test' stamp: 'mg 11/11/2022 14:43:19'!
 test08cannotAddAnAccountTwice
-	| portfolio account |
-	portfolio := Portfolio new.
-	account := ReceptiveAccount new.
 	
-	portfolio addMember: account.
+	portfolioT addMember: accountT.
 	
-	
-	self assert: (portfolio addMember: account) equals: Portfolio errorDuplicatedAccount .! !
+	self assert: (portfolioT addMember: accountT) equals: Portfolio errorDuplicatedAccount .! !
 
-!PortfolioTest methodsFor: 'test' stamp: 'sp 11/10/2022 23:54:25'!
+!PortfolioTest methodsFor: 'test' stamp: 'mg 11/11/2022 14:41:22'!
 test09cannotAddHimselfAsMember
-	| portfolio |
-	portfolio := Portfolio new.
 	
-	self assert: (portfolio addMember: portfolio ) equals: Portfolio errorCannotAddHimselfAsMember .
+	self assert: (portfolioT addMember: portfolioT ) equals: Portfolio errorCannotAddHimselfAsMember .
 	! !
+
+
+!PortfolioTest methodsFor: 'setUp/tearDown' stamp: 'mg 11/11/2022 14:52:04'!
+setUp
+	portfolioT := Portfolio new.
+	accountT := ReceptiveAccount new.
+	accountWith100Peso := ReceptiveAccount new.
+	Deposit register: 100 * peso on: accountWith100Peso .
+	
+! !
 
 
 !classDefinition: #ReceptiveAccountTest category: 'ServiciosFinancieros-Ejercicio'!
 TestCase subclass: #ReceptiveAccountTest
-	instanceVariableNames: ''
+	instanceVariableNames: 'accountT'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
@@ -119,64 +116,54 @@ test01ReceptiveAccountHaveZeroAsBalanceWhenCreated
 	self assert: 0 equals: account balance
 ! !
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'LL 7/1/2021 03:14:20'!
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'mg 11/11/2022 15:34:50'!
 test02DepositIncreasesBalanceOnTransactionValue 
 
-	| account |
-	
-	account := ReceptiveAccount  new.
-	Deposit register: 100 * peso on: account.
+	Deposit register: 100 * peso on: accountT.
 		
-	self assert: 100 * peso equals: account balance
+	self assert: 100 * peso equals: accountT balance
 ! !
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'LL 7/1/2021 03:14:24'!
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'mg 11/11/2022 15:35:21'!
 test03WithdrawDecreasesBalanceOnTransactionValue 
 
-	| account |
-	
-	account := ReceptiveAccount new.
-	Deposit register: 100 * peso on: account.
-	Withdraw register: 50 * peso on: account.
+	Deposit register: 100 * peso on: accountT.
+	Withdraw register: 50 * peso on: accountT.
 		
-	self assert: 50 * peso equals: account balance
+	self assert: 50 * peso equals: accountT balance
 ! !
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'LL 7/1/2021 03:10:14'!
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'mg 11/11/2022 15:37:09'!
 test04WithdrawValueMustBePositive 
 
-	| account withdrawValue |
-	
-	account := ReceptiveAccount new.
+	|  withdrawValue |
 	withdrawValue := 50 * peso.
 	
-	self assert: withdrawValue equals: (Withdraw register: withdrawValue on: account) value
+	self assert: withdrawValue equals: (Withdraw register: withdrawValue on: accountT) value
 ! !
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'LL 7/1/2021 03:10:22'!
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'mg 11/11/2022 15:39:03'!
 test05ReceptiveAccountKnowsRegisteredTransactions 
 
-	| account deposit withdraw |
-	
-	account := ReceptiveAccount new.
-	deposit := Deposit register: 100 * peso on: account.
-	withdraw := Withdraw register: 50 * peso on: account.
+	| deposit withdraw |
+
+	deposit := Deposit register: 100 * peso on: accountT.
+	withdraw := Withdraw register: 50 * peso on: accountT.
 		
-	self assert: (account hasRegistered: deposit).
-	self assert: (account hasRegistered: withdraw).
+	self assert: (accountT hasRegistered: deposit).
+	self assert: (accountT hasRegistered: withdraw).
 ! !
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'LL 7/1/2021 03:12:14'!
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'mg 11/11/2022 15:41:34'!
 test06ReceptiveAccountDoNotKnowNotRegisteredTransactions
 
-	| account deposit withdraw |
+	| deposit withdraw |
 	
-	account := ReceptiveAccount new.
 	deposit :=  Deposit for: 100 * peso.
 	withdraw := Withdraw for: 50 * peso.
 		
-	self deny: (account hasRegistered: deposit).
-	self deny: (account hasRegistered: withdraw).
+	self deny: (accountT hasRegistered: deposit).
+	self deny: (accountT hasRegistered: withdraw).
 ! !
 
 !ReceptiveAccountTest methodsFor: 'tests' stamp: 'LL 7/1/2021 03:12:23'!
@@ -192,94 +179,70 @@ test07AccountKnowsItsTransactions
 	self assert: (account transactions includes: deposit).
 ! !
 
+
+!ReceptiveAccountTest methodsFor: 'setUp/tearDown' stamp: 'mg 11/11/2022 15:34:25'!
+setUp
+	
+	accountT := ReceptiveAccount new.
+! !
+
 
 !classDefinition: #TransferTest category: 'ServiciosFinancieros-Ejercicio'!
 TestCase subclass: #TransferTest
-	instanceVariableNames: ''
+	instanceVariableNames: 'accountX accountY'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!TransferTest methodsFor: 'test' stamp: 'sp 11/10/2022 19:17:51'!
-test01
-	| account1 account2 |
-	account1 := ReceptiveAccount new.
-	account2 := ReceptiveAccount new.
-	Transfer
-		amount: 0 * peso
-		from: account1
-		to: account2.
-	self
-		assert: account1 balance
-		equals: 0 * peso.
-	self
-		assert: account2 balance
-		equals: 0 * peso.! !
+!TransferTest methodsFor: 'test' stamp: 'mg 11/11/2022 10:13:46'!
+test01EmptyTransferDoesNotChangeAccountBalance
 
-!TransferTest methodsFor: 'test' stamp: 'mg 11/9/2022 19:56:57'!
-test02
-	| account1 account2 |
-	account1 _ ReceptiveAccount new.
-	account2 _ ReceptiveAccount new.
-	Transfer
-		amount: 1 * peso
-		from: account1
-		to: account2.
-	self
-		assert: account1 balance
-		equals: -1 * peso.
-	self
-		assert: account2 balance
-		equals: 1 * peso.! !
+	Transfer		amount: 0 * peso		from: accountX	to: accountY.
+	
+	self	assert: accountX balance		equals: 0 * peso.
+	self	assert: accountY balance		equals: 0 * peso.! !
 
-!TransferTest methodsFor: 'test' stamp: 'mg 11/9/2022 19:57:05'!
-test03
-	| account1 account2 |
-	account1 _ ReceptiveAccount new.
-	Deposit
-		register: 100 * peso
-		on: account1.
-	account2 _ ReceptiveAccount new.
-	Transfer
-		amount: 25 * peso
-		from: account1
-		to: account2.
-	self
-		assert: account1 balance
-		equals: 75 * peso.
-	self
-		assert: account2 balance
-		equals: 25 * peso.! !
+!TransferTest methodsFor: 'test' stamp: 'mg 11/11/2022 10:14:34'!
+test02OnePesoTranferGivesAndTakesOnePesoFromBalance
 
-!TransferTest methodsFor: 'test' stamp: 'mg 11/9/2022 19:57:44'!
-test04
-	| account1 account2 transfer |
-	account1 _ ReceptiveAccount new.
-	Deposit
-		register: 100 * peso
-		on: account1.
-	account2 _ ReceptiveAccount new.
-	transfer _ Transfer
-		amount: 25 * peso
-		from: account1
-		to: account2.
-	self
-		assert: transfer value
-		equals: 25 * peso.! !
+	Transfer 		amount: 1 * peso		from: accountX		to: accountY.
+	
+	self assert: accountX balance		equals: -1 * peso.
+	self assert: accountY balance		equals: 1 * peso.! !
 
-!TransferTest methodsFor: 'test' stamp: 'sp 11/9/2022 20:44:51'!
-test05
-	| account1 account2 |
-	account1 _ ReceptiveAccount new.
-	account2 _ ReceptiveAccount new.
-	Transfer
-		amount: 25 * peso
-		from: account1
-		to: account2.
-	account1 balance .
-	account2 .
-	self assert: (((account1 transactions at: 1) getCounterpart) isKindOf: Deposit).
-	self assert: (((account2 transactions at: 1) getCounterpart) isKindOf: Withdraw)	.	! !
+!TransferTest methodsFor: 'test' stamp: 'mg 11/11/2022 10:25:27'!
+test03XPesoTransferGivesAndTakesXPesoFromBalance
+
+	Deposit 	register: 100 * peso		on: accountX.
+	Transfer		amount: 25 * peso		from: accountX		to: accountY.
+	
+	self assert: accountX balance 	equals: 75 * peso.
+	self assert: accountY balance		equals: 25 * peso.! !
+
+!TransferTest methodsFor: 'test' stamp: 'mg 11/11/2022 10:18:46'!
+test04TransferKnowsTheTransactionValue
+	| transfer |
+	
+	Deposit 	register: 100 * peso		on: accountX.
+	transfer _ Transfer		amount: 25 * peso		from: accountX		to: accountY.
+	
+	self assert: transfer value		equals: 25 * peso.! !
+
+!TransferTest methodsFor: 'test' stamp: 'mg 11/11/2022 15:48:34'!
+test05TranferSidesKnowTheirCounterpart
+
+	Transfer		amount: 25 * peso		from: accountX		to: accountY.
+	
+	self assert: (((accountX transactions at: 1) getCounterpart) isKindOf: Deposit).
+	self assert: (((accountY transactions at: 1) getCounterpart) isKindOf: Withdraw)	.	! !
+
+
+!TransferTest methodsFor: 'setUp/tearDown' stamp: 'mg 11/11/2022 10:01:49'!
+setUp
+
+	accountX := ReceptiveAccount new.
+	accountY := ReceptiveAccount new.
+! !
 
 
 !classDefinition: #AccountTransaction category: 'ServiciosFinancieros-Ejercicio'!
