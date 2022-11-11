@@ -5,15 +5,15 @@ TestCase subclass: #PortfolioTest
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'sp 11/10/2022 19:19:42'!
-test01
+!PortfolioTest methodsFor: 'test' stamp: 'sp 11/10/2022 23:47:15'!
+test01newPortfolioHasZeroPesosBalance
 	| portfolio |
 	portfolio := Portfolio new.
 	
 	self assert: portfolio balance equals: 0*peso .! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'sp 11/10/2022 19:32:18'!
-test02
+!PortfolioTest methodsFor: 'test' stamp: 'sp 11/10/2022 23:47:58'!
+test02addAccountAsMember
 	| portfolio account |
 	portfolio := Portfolio new.
 	account := ReceptiveAccount new.
@@ -21,6 +21,85 @@ test02
 	portfolio addMember: account.
 	
 	self assert: (portfolio hasMember: account).! !
+
+!PortfolioTest methodsFor: 'test' stamp: 'sp 11/10/2022 23:48:16'!
+test03portfolioBalanceReturnsAccountBalance
+	| portfolio account |
+	portfolio := Portfolio new.
+	account := ReceptiveAccount new.
+	Deposit register: 100 * peso on: account.
+	portfolio addMember: account.
+	
+	self assert: (portfolio hasMember: account).
+	self assert: portfolio balance equals: 100 * peso.! !
+
+!PortfolioTest methodsFor: 'test' stamp: 'sp 11/10/2022 23:48:35'!
+test04portfolioBalanceReturnsSumOfBalances
+	| portfolio account1 account2 |
+	portfolio := Portfolio new.
+	account1 := ReceptiveAccount new.
+	account2 := ReceptiveAccount new.
+	
+	Deposit register: 100 * peso on: account1.
+	Deposit register: 1000 * peso on: account2.
+	
+	portfolio addMember: account1.
+	portfolio addMember: account2.
+
+	self assert: portfolio balance equals: 1100 * peso.! !
+
+!PortfolioTest methodsFor: 'test' stamp: 'sp 11/10/2022 23:49:32'!
+test05doesNotHaveARegisteredDeposit
+	| portfolio account deposit |
+	portfolio := Portfolio new.
+	account := ReceptiveAccount new.
+	
+	deposit := Deposit register: 100 * peso on: account.
+
+	self assert: (portfolio hasRegistered: deposit) not.! !
+
+!PortfolioTest methodsFor: 'test' stamp: 'sp 11/10/2022 23:49:46'!
+test06hasARegisteredDeposit
+	| portfolio account deposit |
+	portfolio := Portfolio new.
+	account := ReceptiveAccount new.
+	
+	deposit := Deposit register: 100 * peso on: account.
+	portfolio addMember: account .
+	self assert: (portfolio hasRegistered: deposit).! !
+
+!PortfolioTest methodsFor: 'test' stamp: 'sp 11/10/2022 23:50:05'!
+test07getAccountTransactionsHasCorrectTransactions
+	| portfolio account deposit withdraw expectedReturn |
+	portfolio := Portfolio new.
+	account := ReceptiveAccount new.
+	
+	deposit := Deposit register: 100 * peso on: account.
+	withdraw := Withdraw register: 12 * peso on: account.
+	portfolio addMember: account .
+	expectedReturn := OrderedCollection new.
+	expectedReturn add: deposit .
+	expectedReturn add: withdraw .
+	self assert: (portfolio getAccountTransactions: account) equals: expectedReturn.! !
+
+!PortfolioTest methodsFor: 'test' stamp: 'sp 11/10/2022 23:50:20'!
+test08cannotAddAnAccountTwice
+	| portfolio account |
+	portfolio := Portfolio new.
+	account := ReceptiveAccount new.
+	
+	portfolio addMember: account.
+	
+	
+	self assert: (portfolio addMember: account) equals: Portfolio errorDuplicatedAccount .! !
+
+!PortfolioTest methodsFor: 'test' stamp: 'sp 11/10/2022 23:54:25'!
+test09cannotAddHimselfAsMember
+	| portfolio |
+	portfolio := Portfolio new.
+	
+	self assert: (portfolio addMember: portfolio ) equals: Portfolio errorCannotAddHimselfAsMember .
+	! !
 
 
 !classDefinition: #ReceptiveAccountTest category: 'ServiciosFinancieros-Ejercicio'!
@@ -326,37 +405,48 @@ Object subclass: #Portfolio
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'sp 11/10/2022 19:42:46'!
+!Portfolio methodsFor: 'initialization' stamp: 'sp 11/10/2022 23:53:07'!
 addMember: aMember
+	(self == aMember) ifTrue: [
+		^Portfolio errorCannotAddHimselfAsMember.
+		].
 	(self hasMember: aMember ) ifTrue: [
-		^Error .	
+		^Portfolio errorDuplicatedAccount .	
 		].
 	members add: aMember.
 	! !
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'sp 11/10/2022 19:25:25'!
-balance
-	| balance |
-	balance := 0*peso .
-	members do: [ :member |
-		balance := balance + member balance.
-	].
-	^balance.
-		! !
+!Portfolio methodsFor: 'initialization' stamp: 'sp 11/10/2022 23:21:59'!
+getAccountTransactions: anAccount
+	| account |
+	account := members detect: [ :member |
+				member hasMember: anAccount .
+		].
+	^account transactions .! !
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'sp 11/10/2022 19:41:08'!
-hasMember: aMember
-	^(members select: [ :member |
-		(member isKindOf: ReceptiveAccount) ifTrue:[
-			^member ==  aMember ].
-		(member isKindOf: Portfolio ) ifTrue: [
-				^member hasMember: aMember .
-			].
-		]) size ~= 0.! !
-
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'sp 11/10/2022 19:43:44'!
+!Portfolio methodsFor: 'initialization' stamp: 'sp 11/10/2022 19:43:44'!
 initialize
 	members := OrderedCollection new.! !
+
+
+!Portfolio methodsFor: 'accessing' stamp: 'sp 11/10/2022 23:18:03'!
+hasMember: aMember
+	^members anySatisfy: [ :member |
+				^member hasMember: aMember .
+		].! !
+
+!Portfolio methodsFor: 'accessing' stamp: 'sp 11/10/2022 23:18:26'!
+hasRegistered: aTransaction
+	^members anySatisfy: [ :member |
+		^member hasRegistered: aTransaction
+	].! !
+
+
+!Portfolio methodsFor: 'balance' stamp: 'sp 11/10/2022 23:38:42'!
+balance
+	^members sum: [ :member | member balance.
+	] ifEmpty: [0*peso].
+		! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -364,9 +454,18 @@ initialize
 Portfolio class
 	instanceVariableNames: ''!
 
-!Portfolio class methodsFor: 'as yet unclassified' stamp: 'sp 11/10/2022 19:29:25'!
+!Portfolio class methodsFor: 'initialization' stamp: 'sp 11/10/2022 19:29:25'!
 newEmpty
 	Portfolio new initialize.! !
+
+
+!Portfolio class methodsFor: 'errors' stamp: 'sp 11/10/2022 23:53:35'!
+errorCannotAddHimselfAsMember
+	^'Cannot be himself as member.'.! !
+
+!Portfolio class methodsFor: 'errors' stamp: 'sp 11/10/2022 23:53:45'!
+errorDuplicatedAccount
+	^'Cant add the same account twice'.! !
 
 
 !classDefinition: #ReceptiveAccount category: 'ServiciosFinancieros-Ejercicio'!
@@ -382,13 +481,14 @@ initialize
 	transactions := OrderedCollection new.! !
 
 
-!ReceptiveAccount methodsFor: 'main protocol' stamp: 'mg 11/9/2022 19:54:13'!
-balance
-	|aBalance |
-	aBalance := 0.
-	transactions do: [:aTransaction | aBalance :=aBalance + aTransaction absoluteValue].
+!ReceptiveAccount methodsFor: 'private' stamp: 'sp 11/10/2022 23:06:41'!
+hasMember: aMember
+	^aMember == self.! !
 
-	^aBalance. ! !
+
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'sp 11/10/2022 23:38:05'!
+balance
+ 	^transactions sum: [ :aTransaction | aTransaction absoluteValue] ifEmpty: [^0 * peso].! !
 
 !ReceptiveAccount methodsFor: 'main protocol' stamp: 'NR 10/17/2019 03:28:43'!
 hasRegistered: aTransaction
@@ -415,7 +515,12 @@ Object subclass: #Transfer
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!Transfer methodsFor: 'as yet unclassified' stamp: 'mg 11/9/2022 20:09:36'!
+!Transfer methodsFor: 'accessing' stamp: 'mg 11/9/2022 19:55:00'!
+value
+	^ value.! !
+
+
+!Transfer methodsFor: 'initialization' stamp: 'mg 11/9/2022 20:09:36'!
 amount: anAmount from: aSenderAccount to: aReceiverAccount 
 
 	deposit := Deposit register: anAmount on: aReceiverAccount.
@@ -423,10 +528,6 @@ amount: anAmount from: aSenderAccount to: aReceiverAccount
 	value := anAmount.
 	deposit setCounterpart: withdraw .
 	withdraw setCounterpart: deposit .! !
-
-!Transfer methodsFor: 'as yet unclassified' stamp: 'mg 11/9/2022 19:55:00'!
-value
-	^ value.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
